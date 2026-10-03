@@ -1,5 +1,5 @@
 import { mkdir, readFile, rename, rm, stat, unlink, writeFile, chmod } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { applyEdits, modify, parse, printParseErrorCode, type ParseError } from "jsonc-parser";
 import type { Api, Model } from "@earendil-works/pi-ai";
@@ -339,7 +339,7 @@ async function readModelsJsonText(path: string): Promise<string> {
 
 async function writeModelsJsonAtomic(path: string, text: string): Promise<void> {
   await mkdir(dirname(path), { recursive: true, mode: 0o700 });
-  const temporary = `${dirname(path)}/.${path.split("/").pop() ?? "models.json"}.${process.pid}.${Math.random().toString(16).slice(2)}.tmp`;
+  const temporary = `${dirname(path)}/.${basename(path)}.${process.pid}.${Math.random().toString(16).slice(2)}.tmp`;
   try {
     await writeFile(temporary, text.endsWith("\n") ? text : `${text}\n`, { encoding: "utf8", mode: 0o600 });
     await chmod(temporary, 0o600);
